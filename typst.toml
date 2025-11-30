@@ -1,0 +1,10 @@
+[package]
+name = "pariman"
+version = "0.1.0"
+entrypoint = "src/export.typ"
+authors = ["pacaunt <@pacaunt>"]
+license = "MIT"
+compiler = "0.13.0"
+repository = "https://github.com/pacaunt/pariman"
+description = "A package to create slides with ease."
+categories = ["presentation"]
