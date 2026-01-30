@@ -195,6 +195,7 @@
   if "value" in formatting {
     value = formatting.remove("value")
     q.display = auto
+    q.method = auto
   }
   quantity(value, ..unit, ..q, ..formatting)
 }
