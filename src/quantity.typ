@@ -79,7 +79,6 @@
   let mantissa = calc.round(num / calc.pow(10, N), digits: figures)
   let formatted = str(mantissa) + if N != 0 { "e" + str(N) }
   formatted.replace(sym.minus, "-")
-  // assert(formatted.contains(regex("\d+\.*\d*e\-*\d+")), message: "Expected floating exponent, got " + repr(formatted))
 }
 
 #let info-num(value, figures: auto, places: auto) = {
@@ -169,13 +168,19 @@
   (
     value: eval(value),
     unit: units,
+    // deciman places
     places: places,
+    // significant figures
     figures: figures,
+    // formatted value
     "show": zero.num(value, ..default-format, ..formatting),
+    // verbatim value
     "text": str(value),
+    // display with unit
     display: display,
+    // the calculation
     method: method,
-    source: source // for formatting methods
+    source: source, // for formatting methods
   )
 }
 
@@ -186,9 +191,12 @@
 #let set-quantity(q, ..formatting) = {
   let value = q.remove("value")
   let unit = q.remove("unit")
+  let formatting = formatting.named()
+  if "value" in formatting {
+    value = formatting.remove("value")
+    q.display = auto
+  }
   quantity(value, ..unit, ..q, ..formatting)
 }
-
-#scientify(eval("10.6e-27"), magnitude-limit: 4)
 
 #let exact = quantity.with(figures: 99)

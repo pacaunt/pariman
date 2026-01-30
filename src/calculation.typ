@@ -1,12 +1,13 @@
-#import "quantity.typ": _get, quantity
+#import "quantity.typ": _get, quantity, exact, set-quantity
 #import "converter.typ": invert-unit, multiply-unit, operate-unit, power-unit, root-unit
+#import "utils.typ"
 
 #let neg(
   qnt,
   method: qnt => {
     $-$ + qnt.method
   },
-  ..formatting
+  ..formatting,
 ) = {
   let (value, unit, figures) = qnt
   quantity(
@@ -249,8 +250,38 @@
   )
 }
 
+#let solver(
+  func,
+  init: none,
+  tolerance: 1e-6,
+  max-iterations: 20,
+  ..formatting,
+) = {
+  assert(
+    init != none and type(init) == dictionary,
+    message: "Initial value of the target variable must be specified in terms of quantity",
+  )
+
+  let make-quantity(x, origin: init) = {
+    set-quantity(init, value: x)
+  }
+
+  let new-func(x) = func(make-quantity(x, origin: init)).value
+
+  make-quantity(
+    utils.newton-solver(
+      init: init.value, 
+      tolerance: tolerance, 
+      max-iterations: max-iterations, 
+      new-func
+    ), 
+    origin: init
+  )
+}
+
 #let new-factor(from, to, ..formatting) = {
   let (from, to) = (from, to).map(n => if type(n) != dictionary { quantity(..n) } else { n })
   let inverted = div(from, to, figures: 10, ..formatting)
-  div(to, from, figures: 10, ..formatting) + (inv: inverted) 
+  div(to, from, figures: 10, ..formatting) + (inv: inverted)
 }
+
