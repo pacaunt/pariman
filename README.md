@@ -21,7 +21,7 @@ Display the raw value verbatim: #a.text \
 Significant figures: #a.figures \
 Decimal places: #a.places
 ```
-<img alt="img1" src="https://github.com/pacaunt/pariman/blob/main/docs/image1.png">
+<img alt="img1" src="https://github.com/pacaunt/pariman/blob/main/docs/image1.png"/>
 Pariman's `quantity` takes care of the significant figure calculations and unit formatting automatically. The unit formatting functionality is provided by the #link("https://github.com/Mc-Zen/zero.git", [zero]) package. Therefore, the format options for the unit can be used.
 ```typst
 #let b = quantity("1234.56", "kg m/s^2")
@@ -29,7 +29,7 @@ The formatted value and unit: #b.display  \
 #zero.set-unit(fraction: "fraction")
 After new fraction mode: #b.display
 ```
-#zero.set-unit(fraction: "power")
+<img alt="img2" src="https://github.com/pacaunt/pariman/blob/main/docs/image2.png"/>
 Pariman loads the `zero` package automatically, so the the unit formatting options can be modified by `zero.set-xxx` functions.
 
 For exact values like integers, pi, or other constants, that should not be counted as significant figures, Pariman have the `#exact` function for exact number quantities. The `#exact` function does not accept unit and has 99 significant figures.
@@ -39,6 +39,7 @@ For exact values like integers, pi, or other constants, that should not be count
 The value: #pi.display \
 Significant figures: #pi.figures
 ```
+<img alt="img3" src="https://github.com/pacaunt/pariman/blob/main/docs/image3.png"/>
 Note that the `quantity` function can accept only the value for the unitless quantoity.
 
 ## The `calculation` module
@@ -50,6 +51,7 @@ The `calculation` module provides a framework for calculations involving units. 
 The velocity is given by #v.display. \
 The unit is combined!
 ```
+<img alt="img4" src="https://github.com/pacaunt/pariman/blob/main/docs/image4.png"/>
 Moreover, each quantity also have a `method` property that can show its previous calculation.
 ```typst
 #let V = quantity("2.0", "cm^3")
@@ -58,6 +60,7 @@ Moreover, each quantity also have a `method` property that can show its previous
 From $V = #V.display$, and density $d = #d.display$, we have
 $ m = d V = #m.method = #m.display. $
 ```
+<img alt="img5" src="https://github.com/pacaunt/pariman/blob/main/docs/image5.png"/>
 The `method` property is recursive, meaning that it is accumulated if your calculation is complicated. Initially, `method` is set to `auto`.
 
 ```typst
@@ -83,6 +86,8 @@ $
     &= #k.display 
 $
 ```
+<img alt="img6" src="https://github.com/pacaunt/pariman/blob/main/docs/image6.png"/>
+
 ## `set-quantity` 
 If you want to manually set the formatting unit and numbers in the `quantity`, you can use the `set-quantity` function. 
 ```typst
@@ -97,7 +102,10 @@ If you want to manually set the formatting unit and numbers in the `quantity`, y
 #calculation.mul(R, T).display 
 // 5 figures, follows the T.
 ```
+<img alt="img7" src="https://github.com/pacaunt/pariman/blob/main/docs/image7.png"/>
+
 Moreover, if you want to reset the `method` property of a quantity, you can use `set-quantity(q, method: auto)` as 
+
 ```typst 
 #let R = quantity("8.314", "J/mol K")
 #let T = quantity("298.15", "K")
@@ -110,6 +118,7 @@ $ prod.method = prod.display $
 After reset:
 $ prod.method = prod.display $
 ```
+<img alt="img8" src="https://github.com/pacaunt/pariman/blob/main/docs/image8.png"/>
 
 ## Unit conversions 
 The `new-factor` function creates a new quantity that can be used as a conversion factor. This conversion factor have the following characteristics: 
@@ -136,6 +145,7 @@ $ v1.method = v1.display $
 Second conversion: 
 $ v2.method = v2.display $
 ```
+<img alt="img9" src="https://github.com/pacaunt/pariman/blob/main/docs/image9.png"/>
 
 # Available Calculation Methods 
 - `neg(a)` negate a number, returns negative value of `a`. 
