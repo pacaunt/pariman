@@ -66,7 +66,7 @@
 }
 
 /// The formatting functionality is provided by zero package.
-#import "@preview/zero:0.5.0" as zero: zi
+#import "@preview/zero:0.6.0" as zero: zi
 
 #let scientify(num, figures: 4, magnitude-limit: none) = {
   // num is given as a number
