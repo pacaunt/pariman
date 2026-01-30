@@ -1,6 +1,23 @@
 #import "quantity.typ": _get, quantity
 #import "converter.typ": invert-unit, multiply-unit, operate-unit, power-unit, root-unit
 
+#let neg(
+  qnt,
+  method: qnt => {
+    $-$ + qnt.method
+  },
+  ..formatting
+) = {
+  let (value, unit, figures) = qnt
+  quantity(
+    -value,
+    ..unit,
+    figures: figures,
+    round-mode: "figures",
+    method: method(qnt),
+    ..formatting,
+  )
+}
 
 #let add(
   ..qnts,
@@ -22,6 +39,7 @@
     places: new-places,
     round-mode: "places",
     method: method(qnts),
+    source: "add",
     ..formatting,
   )
 }
@@ -46,6 +64,7 @@
     places: new-places,
     round-mode: "places",
     method: method(q1, q2),
+    source: "sub",
     ..formatting,
   )
 }
@@ -53,7 +72,7 @@
 #let mul(
   ..qnts,
   method: qnts => {
-    qnts.map(q => $(#q.method)$).join()
+    qnts.map(q => if q.source in ("add", "sub") { $(#q.method)$ } else { q.method }).join($times$)
   },
 ) = {
   let formatting = qnts.named()
@@ -69,6 +88,7 @@
     figures: new-figures,
     round-mode: "figures",
     method: method(qnts),
+    source: "mul",
     ..formatting,
   )
 }

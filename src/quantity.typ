@@ -68,22 +68,21 @@
 /// The formatting functionality is provided by zero package.
 #import "@preview/zero:0.5.0" as zero: zi
 
-#let quantity(
-  value,
-  rounder: it => it,
-  ..args,
-  unit-sep: " ",
-  places: auto,
-  figures: auto,
-  round-mode: "places",
-  method: auto,
-) = {
-  let formatting = args.named()
-  let arr-units = args.pos()
+#let scientify(num, figures: 4, magnitude-limit: none) = {
+  // num is given as a number
+  let N = if num == 0 { 0 } else {
+    calc.floor(calc.log(calc.abs(num)))
+  }
+  if calc.abs(N) < magnitude-limit {
+    return str(num)
+  }
+  let mantissa = calc.round(num / calc.pow(10, N), digits: figures)
+  let formatted = str(mantissa) + if N != 0 { "e" + str(N) }
+  formatted.replace(sym.minus, "-")
+  // assert(formatted.contains(regex("\d+\.*\d*e\-*\d+")), message: "Expected floating exponent, got " + repr(formatted))
+}
 
-
-  // Extract information about rounding
-  value = str(value)
+#let info-num(value, figures: auto, places: auto) = {
   let (mantissa, exp) = (value, "")
   let (integer, dec) = (value, "")
   if value.contains("e") {
@@ -95,15 +94,47 @@
 
   if figures == auto {
     figures = integer.len() + dec.len()
-    if value.contains("-") {
+    if integer.contains("-") {
       figures -= 1
     }
   }
   if places == auto {
     places = dec.len()
   }
+  return (
+    places: places,
+    figures: figures,
+    integer: integer,
+    decimal: dec,
+    mantissa: mantissa,
+    exponent: exp,
+  )
+}
+
+#let quantity(
+  value,
+  rounder: it => it,
+  ..args,
+  unit-sep: " ",
+  places: auto,
+  figures: auto,
+  magnitude-limit: 4,
+  round-mode: "places",
+  method: auto,
+  display: auto,
+  source: none,
+) = {
+  let formatting = args.named()
+  let arr-units = args.pos()
+
+  value = str(value)
+  // Extract information about rounding
+  let (figures, places) = info-num(value, figures: figures, places: places)
 
   let digits = if round-mode == "places" { places } else { figures }
+
+  value = scientify(eval(value), figures: figures, magnitude-limit: magnitude-limit)
+
 
   let qty = zero.num
   let value = rounder(value)
@@ -126,13 +157,16 @@
   let default-format = (
     round: (mode: round-mode, precision: digits),
   )
-  
-  let display = qty(value, ..default-format, ..formatting)
+
+  if display == auto {
+    display = qty(value, ..default-format, ..formatting)
+  }
+
   if method == auto {
     method = display
   }
+
   (
-    arr-units: arr-units,
     value: eval(value),
     unit: units,
     places: places,
@@ -141,6 +175,7 @@
     "text": str(value),
     display: display,
     method: method,
+    source: source // for formatting methods
   )
 }
 
@@ -148,4 +183,12 @@
   qnts.pos().map(q => q.at(prop))
 }
 
-#let set-quantity(q, ..formatting) = quantity(..q, ..formatting)
+#let set-quantity(q, ..formatting) = {
+  let value = q.remove("value")
+  let unit = q.remove("unit")
+  quantity(value, ..unit, ..q, ..formatting)
+}
+
+#scientify(eval("10.6e-27"), magnitude-limit: 4)
+
+#let exact = quantity.with(figures: 99)
