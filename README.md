@@ -1,5 +1,5 @@
 # pariman
-A Framework on Engineering Calculation With Units in Typst. 
+A Framework on Engineering Calculation With Units in Typst. Featured with unit and number formatting by ![zero](https://github.com/Mc-Zen/zero.git) package.
 
  
 # Installation
@@ -22,7 +22,9 @@ Significant figures: #a.figures \
 Decimal places: #a.places
 ```
 <img alt="img1" src="https://github.com/pacaunt/pariman/blob/main/docs/image1.png"/>
-Pariman's `quantity` takes care of the significant figure calculations and unit formatting automatically. The unit formatting functionality is provided by the #link("https://github.com/Mc-Zen/zero.git", [zero]) package. Therefore, the format options for the unit can be used.
+
+Pariman's `quantity` takes care of the significant figure calculations and unit formatting automatically. The unit formatting functionality is provided by the ![zero](https://github.com/Mc-Zen/zero.git) package. Therefore, the format options for the unit can be used.
+
 ```typst
 #let b = quantity("1234.56", "kg m/s^2")
 The formatted value and unit: #b.display  \
@@ -44,6 +46,7 @@ Note that the `quantity` function can accept only the value for the unitless qua
 
 ## The `calculation` module
 The `calculation` module provides a framework for calculations involving units. Every function will modify the input `quantity`s into a new value with a new unit corresponding to the law of unit relationships.
+
 ```typst
 #let s = quantity("1.0", "m")
 #let t = quantity("5.0", "s")
@@ -52,7 +55,9 @@ The velocity is given by #v.display. \
 The unit is combined!
 ```
 <img alt="img4" src="https://github.com/pacaunt/pariman/blob/main/docs/image4.png"/>
+
 Moreover, each quantity also have a `method` property that can show its previous calculation.
+
 ```typst
 #let V = quantity("2.0", "cm^3")
 #let d = quantity("0.89", "g/cm^3")
