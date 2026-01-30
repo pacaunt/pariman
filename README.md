@@ -1,5 +1,5 @@
 # pariman
-A Framework on Engineering Calculation With Units in Typst. Featured with unit and number formatting by ![zero](https://github.com/Mc-Zen/zero.git) package.
+A Framework on Engineering Calculation With Units in Typst. Featured with unit and number formatting by [zero](https://github.com/Mc-Zen/zero.git) package.
 
  
 # Installation
@@ -23,7 +23,7 @@ Decimal places: #a.places
 ```
 <img alt="img1" src="https://github.com/pacaunt/pariman/blob/main/docs/image1.png"/>
 
-Pariman's `quantity` takes care of the significant figure calculations and unit formatting automatically. The unit formatting functionality is provided by the ![zero](https://github.com/Mc-Zen/zero.git) package. Therefore, the format options for the unit can be used.
+Pariman's `quantity` takes care of the significant figure calculations and unit formatting automatically. The unit formatting functionality is provided by the [zero](https://github.com/Mc-Zen/zero.git) package. Therefore, the format options for the unit can be used.
 
 ```typst
 #let b = quantity("1234.56", "kg m/s^2")
