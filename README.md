@@ -21,7 +21,7 @@ Display the raw value verbatim: #a.text \
 Significant figures: #a.figures \
 Decimal places: #a.places
 ```
-<img alt="img1" src="https://github.com/pacaunt/pariman/tree/main/docs/image1.png">
+<img alt="img1" src="https://github.com/pacaunt/pariman/blob/main/docs/image1.png">
 Pariman's `quantity` takes care of the significant figure calculations and unit formatting automatically. The unit formatting functionality is provided by the #link("https://github.com/Mc-Zen/zero.git", [zero]) package. Therefore, the format options for the unit can be used.
 ```typst
 #let b = quantity("1234.56", "kg m/s^2")
