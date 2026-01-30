@@ -1,5 +1,7 @@
 #import "../src/export.typ" as pariman: *
 #import "@preview/zebraw:0.6.1": zebraw
+#let eval-example = eval.with(mode: "markup", scope: dictionary(pariman))
+
 #set text(font: "New Computer Modern")
 #show math.equation: set text(weight: 400)
 #show link: set text(fill: blue)
@@ -16,7 +18,7 @@
     raw(lang: "typst", it.text, block: true),
     {
       set text(font: "New Computer Modern")
-      eval(it.text, scope: dictionary(pariman), mode: "markup")
+      eval-example(it.text)
     },
   )
 }
@@ -41,6 +43,7 @@ Or install the package locally by cloning this package into your local package l
 = Usage
 == The `quantity` function
 The package provides a dictonary-based element called `quantity`. This `quantity` can be used as a number to all of the calculation functions in Pariman's framework. The quantity is declared by specify its value and unit.
+
 ```example
 #let a = quantity("1.0e5", "m/s^2")
 Display value and unit: #a.display \
@@ -176,4 +179,5 @@ $ v2.method = v2.display $
 - `ln(a)` returns the natural log of `a`. The quantity `a` must be unitless. 
 - `log(a, base: 10)` returns the logarithm of `a` on base `base`. Error if `a` is not unitless.
 - `root(a, n)` returns the $n$th root of `a`. If `n` is not an integer, then `a` must be unitless. 
- 
+- `solver(func, init: none)` solves the function that is written in the form $f(x) = 0$. It returns another quantity that has the same dimension as the `init` value. //
+
