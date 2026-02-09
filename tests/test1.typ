@@ -1,4 +1,4 @@
-#import "../src/export.typ": * 
+#import "../export.typ": * 
 #import "../src/utils.typ": * 
 
 

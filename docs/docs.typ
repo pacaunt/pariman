@@ -1,4 +1,4 @@
-#import "../src/export.typ" as pariman: *
+#import "../export.typ" as pariman: *
 #import "@preview/zebraw:0.6.1": zebraw
 #let eval-example = eval.with(mode: "markup", scope: dictionary(pariman))
 
