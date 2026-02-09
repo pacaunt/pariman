@@ -113,6 +113,7 @@ $
     &= #k.display 
 $
 ```
+
 == `set-quantity` 
 If you want to manually set the formatting unit and numbers in the `quantity`, you can use the `set-quantity` function. 
 ```example
