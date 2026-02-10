@@ -152,6 +152,56 @@ $ v2.method = v2.display $
 ```
 <img alt="new-factor" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image9.png"/>
 
+### In-Text Quantity Declaration (The `qt` Module)
+This module provides a top-layer functions that makes declaration of the quantities can be done at the same time as showing the formatted quantities. Declaration can be done by `qt.new()` function, which receives the same argument set as the `quantity` constructor, but with an additional, positional argument: its key/name. This name is important because it will be used to retrieve the value declared for further calculations or updates. 
+
+```typst 
+// Syntax: #qt.new(name, value, ..units)
+A chemist added #qt.new("mA", "1.050", "g")
+of A into a beaker filled with 
+#qt.new("Vw", "100", "mL") of water. 
+```
+<img alt="in-text declaration of quantities" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image10.png"/>
+
+Moreover, this `#qt.new` function also receives the following named options: 
+- `displayed` (bool, default: `true`) Whether to display the declared quantity immediately. 
+- `is-exact` (bool, default: `false`) Whether to set the specified quantity as an exact value (like declaring by `exact` function).
+To manipulate the quantities declared, we can use `#qt.update(key, function)` to update the variable that has a named `key` (same as the name specified by `#qt.new`), or create a new quantity named `key` by using a function `function`. For example, 
+
+```typst
+I put a #qt.new("ms", "30.0", "g") of sugar into a #qt.new("V", "105", "mL") of water in a cup. After being stirred thoroughly, the sugar solution will have a concentration of
+// import the division function
+#import calculation: div 
+// An update to calculate the concentration!
+#qt.update("conc", q => div(q.ms, q.V))
+// Show the result!
+$ #qt.method("conc") = #qt.display("conc") $
+```
+
+<img alt="qt.update function demonstration" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image11.png"/>
+
+Note that `#qt.display(key)` and `#qt.method(key)` are used as  shortcut for accessing the `display` and `method` properties of the quantity identified by the name `key`.  For other properties, you can access by `#qt.get(key: name)` as the following. Highlight the `context`. 
+
+```typst 
+#context qt.get(key: "ms")
+```
+
+<img alt="qt.get() to see the properties" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image12.png"/>
+
+Lastly, you can set the property like `set-quantity` function by using the analogous `#qt.set-property(key, ..properties)`, such as 
+
+```typst 
+What is the value of $pi$? \
+// too long number!
+It is #qt.new("pi", calc.pi, is-exact: true)  \
+Oh, too long,  \
+// set the displayed figure number
+#qt.set-property("pi", display-figures: 4) 
+It is now only #qt.display("pi")
+```
+
+<img alt="set the quantity with qt.set-property" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image13.png"/>
+
 ## Available Calculation Methods 
 - `neg(a)` negate a number, returns negative value of `a`. 
 - `add(..q)` addition. Error if the unit of each added quantity has different units. Returns the sum of all `q`.

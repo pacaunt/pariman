@@ -169,6 +169,7 @@
   method: auto,
   display: auto,
   source: none,
+  is-exact: false,
 ) = {
   let formatting = args.named()
   let arr-units = args.pos()
@@ -245,23 +246,12 @@
     method: method,
     source: source, // for formatting methods
     round-mode: round-mode,
+    is-exact: is-exact
   )
 }
 
 #let _get(prop, ..qnts) = {
   qnts.pos().map(q => q.at(prop))
-}
-
-#let set-quantity(q, ..formatting) = {
-  let value = q.remove("value")
-  let unit = q.remove("unit")
-  let formatting = formatting.named()
-  if "value" in formatting {
-    value = formatting.remove("value")
-    q.display = auto
-    q.method = auto
-  }
-  quantity(value, ..unit, ..q, ..formatting, display: auto)
 }
 
 #let exact(
@@ -279,5 +269,19 @@
     ..units, 
     figures: display-figures, 
     places: display-places, 
+    is-exact: true,
   ) + (figures: figures, places: places)
+}
+
+#let set-quantity(q, ..formatting) = {
+  let value = q.remove("value")
+  let unit = q.remove("unit")
+  let formatting = formatting.named()
+  if "value" in formatting {
+    value = formatting.remove("value")
+    q.display = auto
+    q.method = auto
+  }
+  let func = if q.is-exact { exact } else { quantity }
+  func(value, ..unit, ..q, ..formatting, display: auto)
 }

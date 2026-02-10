@@ -62,6 +62,14 @@
 #let length-km = calculation.mul(a1, m-km.inv)
 
 #length-km.method = #length-km.display
+
+#let pi = exact(calc.pi)
+#let pi = set-quantity(pi, display-figures: 3)
+#pi.display
+
+#let pi = exact(calc.pi, display-figures: 3)
+#pi.display
+
 // positive exponent
 // negative exponent
 // very large number

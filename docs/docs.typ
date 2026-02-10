@@ -3,14 +3,15 @@
 #let eval-example = eval.with(mode: "markup", scope: dictionary(pariman))
 
 #set text(font: "New Computer Modern")
+
 #show math.equation: set text(weight: 400)
 #show link: set text(fill: blue)
 #show link: underline
 #show raw: set text(font: "JetBrainsMono NF")
-#show raw.where(block: false): it => box(radius: 0.2em, fill: gray.transparentize(85%), outset: 0.2em, it)
+#show raw.where(block: false): box
 #set heading(numbering: "1.1")
-#show: zebraw
 
+#show: zebraw
 #show raw.where(lang: "example"): it => {
   grid(
     columns: (1fr,) * 2,
@@ -62,12 +63,20 @@ After new fraction mode: #b.display
 #zero.set-unit(fraction: "power")
 Pariman loads the `zero` package automatically, so the the unit formatting options can be modified by `zero.set-xxx` functions.
 
-For exact values like integers, pi, or other constants, that should not be counted as significant figures, Pariman have the `#exact` function for exact number quantities. The `#exact` function does not accept unit and has 99 significant figures.
+For exact values like integers, pi, or other constants, that should not be counted as significant figures, Pariman have the `#exact` function for exact number quantities. The `#exact` function has 99 significant figures and 99 decimal places, but the displayed figures and decimal places can be set by using the option `display-figures` and `display-places`.
 
 ```example
 #let pi = exact(calc.pi)
 The value: #pi.display \
-Significant figures: #pi.figures
+Significant figures: #pi.figures \
+Decimal places: #pi.places 
+
+// The shorter version
+#let s-pi = exact(calc.pi, display-figures: 4)
+The displayed value: #s-pi.display \
+// does not effect the real significant figures 
+Significant figures: #s-pi.figures \
+Decimal places: #s-pi.places
 ```
 Note that the `quantity` function can accept only the value for the unitless quantoity.
 
@@ -168,7 +177,7 @@ Second conversion:
 $ v2.method = v2.display $
 ```
 
-== In-Text Quantity Declaration (`qt` Module)
+== In-Text Quantity Declaration (The `qt` Module)
 This module provides a top-layer functions that makes declaration of the quantities can be done at the same time as showing the formatted quantities. Declaration can be done by `qt.new()` function, which receives the same argument set as the `quantity` constructor, but with an additional, positional argument: its key/name. This name is important because it will be used to retrieve the value declared for further calculations or updates.  
 ```example 
 // Syntax: #qt.new(name, value, ..units)
@@ -179,6 +188,31 @@ of A into a beaker filled with
 Moreover, this `#qt.new` function also receives the following named options: 
 - `displayed` (bool, default: `true`) Whether to display the declared quantity immediately. 
 - `is-exact` (bool, default: `false`) Whether to set the specified quantity as an exact value (like declaring by `exact` function).
+To manipulate the quantities declared, we can use `#qt.update(key, function)` to update the variable that has a named `key` (same as the name specified by `#qt.new`), or create a new quantity named `key` by using a function `function`. For example, 
+
+```example
+I put a #qt.new("ms", "30.0", "g") of sugar into a #qt.new("V", "105", "mL") of water in a cup. After being stirred thoroughly, the sugar solution will have a concentration of
+// import the division function
+#import calculation: div 
+// An update to calculate the concentration!
+#qt.update("conc", q => div(q.ms, q.V))
+// Show the result!
+$ #qt.method("conc") = #qt.display("conc") $
+```
+Note that `#qt.display(key)` and `#qt.method(key)` are used as  shortcut for accessing the `display` and `method` properties of the quantity identified by the name `key`.  For other properties, you can access by `#qt.get(key: name)` as the following. Highlight the `context`. 
+```example 
+#context qt.get(key: "ms")
+```
+Lastly, you can set the property like `set-quantity` function by using the analogous `#qt.set-property(key, ..properties)`, such as 
+```example 
+What is the value of $pi$? \
+// too long number!
+It is #qt.new("pi", calc.pi, is-exact: true)  \
+Oh, too long,  \
+// set the displayed figure number
+#qt.set-property("pi", display-figures: 4) 
+It is now only #qt.display("pi")
+```
 
 = Available Calculation Methods 
 - `neg(a)` negate a number, returns negative value of `a`. 
