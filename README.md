@@ -5,7 +5,7 @@ A Framework on Engineering Calculation With Units in Typst. Featured with unit a
 ## Installation
 Import the package by
 ```typst
-#import "@preview/pariman:0.1.0": *
+#import "@preview/pariman:0.2.0": *
 ```
 Or install the package locally by cloning this package into your local package location.
 
@@ -21,7 +21,7 @@ Display the raw value verbatim: #a.text \
 Significant figures: #a.figures \
 Decimal places: #a.places
 ```
-<img alt="image of displaying quantity" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image1.png"/>
+<img alt="image of displaying quantity" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image1.png"/>
 
 Pariman's `quantity` takes care of the significant figure calculations and unit formatting automatically. The unit formatting functionality is provided by the [zero](https://github.com/Mc-Zen/zero.git) package. Therefore, the format options for the unit can be used.
 
@@ -31,7 +31,7 @@ The formatted value and unit: #b.display  \
 #zero.set-unit(fraction: "fraction")
 After new fraction mode: #b.display
 ```
-<img alt="setting the unit" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image2.png"/>
+<img alt="setting the unit" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image2.png"/>
 Pariman loads the `zero` package automatically, so the the unit formatting options can be modified by `zero.set-xxx` functions.
 
 For exact values like integers, pi, or other constants, that should not be counted as significant figures, Pariman have the `#exact` function for exact number quantities. The `#exact` function does not accept unit and has 99 significant figures.
@@ -41,7 +41,7 @@ For exact values like integers, pi, or other constants, that should not be count
 The value: #pi.display \
 Significant figures: #pi.figures
 ```
-<img alt="exact number" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image3.png"/>
+<img alt="exact number" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image3.png"/>
 Note that the `quantity` function can accept only the value for the unitless quantoity.
 
 ### The `calculation` module
@@ -54,7 +54,7 @@ The `calculation` module provides a framework for calculations involving units. 
 The velocity is given by #v.display. \
 The unit is combined!
 ```
-<img alt="unit concatenation" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image4.png"/>
+<img alt="unit concatenation" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image4.png"/>
 
 Moreover, each quantity also have a `method` property that can show its previous calculation.
 
@@ -65,7 +65,7 @@ Moreover, each quantity also have a `method` property that can show its previous
 From $V = #V.display$, and density $d = #d.display$, we have
 $ m = d V = #m.method = #m.display. $
 ```
-<img alt="method of calculation" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image5.png"/>
+<img alt="method of calculation" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image5.png"/>
 The `method` property is recursive, meaning that it is accumulated if your calculation is complicated. Initially, `method` is set to `auto`.
 
 ```typst
@@ -91,7 +91,7 @@ $
     &= #k.display 
 $
 ```
-<img alt="advanced methods" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image6.png"/>
+<img alt="advanced methods" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image6.png"/>
 
 ### `set-quantity` 
 If you want to manually set the formatting unit and numbers in the `quantity`, you can use the `set-quantity` function. 
@@ -107,7 +107,7 @@ If you want to manually set the formatting unit and numbers in the `quantity`, y
 #calculation.mul(R, T).display 
 // 5 figures, follows the T.
 ```
-<img alt="set-quantity" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image7.png"/>
+<img alt="set-quantity" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image7.png"/>
 
 Moreover, if you want to reset the `method` property of a quantity, you can use `set-quantity(q, method: auto)` as 
 
@@ -123,7 +123,7 @@ $ prod.method = prod.display $
 After reset:
 $ prod.method = prod.display $
 ```
-<img alt="reset method" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image8.png"/>
+<img alt="reset method" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image8.png"/>
 
 ### Unit conversions 
 The `new-factor` function creates a new quantity that can be used as a conversion factor. This conversion factor have the following characteristics: 
@@ -150,7 +150,57 @@ $ v1.method = v1.display $
 Second conversion: 
 $ v2.method = v2.display $
 ```
-<img alt="new-factor" src="https://github.com/pacaunt/pariman/blob/c5038e71341250b76ed0a96e9a97d8a9f2a72c9e/docs/image9.png"/>
+<img alt="new-factor" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image9.png"/>
+
+### In-Text Quantity Declaration (The `qt` Module)
+This module provides a top-layer functions that makes declaration of the quantities can be done at the same time as showing the formatted quantities. Declaration can be done by `qt.new()` function, which receives the same argument set as the `quantity` constructor, but with an additional, positional argument: its key/name. This name is important because it will be used to retrieve the value declared for further calculations or updates. 
+
+```typst 
+// Syntax: #qt.new(name, value, ..units)
+A chemist added #qt.new("mA", "1.050", "g")
+of A into a beaker filled with 
+#qt.new("Vw", "100", "mL") of water. 
+```
+<img alt="in-text declaration of quantities" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image10.png"/>
+
+Moreover, this `#qt.new` function also receives the following named options: 
+- `displayed` (bool, default: `true`) Whether to display the declared quantity immediately. 
+- `is-exact` (bool, default: `false`) Whether to set the specified quantity as an exact value (like declaring by `exact` function).
+To manipulate the quantities declared, we can use `#qt.update(key, function)` to update the variable that has a named `key` (same as the name specified by `#qt.new`), or create a new quantity named `key` by using a function `function`. For example, 
+
+```typst
+I put a #qt.new("ms", "30.0", "g") of sugar into a #qt.new("V", "105", "mL") of water in a cup. After being stirred thoroughly, the sugar solution will have a concentration of
+// import the division function
+#import calculation: div 
+// An update to calculate the concentration!
+#qt.update("conc", q => div(q.ms, q.V))
+// Show the result!
+$ #qt.method("conc") = #qt.display("conc") $
+```
+
+<img alt="qt.update function demonstration" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image11.png"/>
+
+Note that `#qt.display(key)` and `#qt.method(key)` are used as  shortcut for accessing the `display` and `method` properties of the quantity identified by the name `key`.  For other properties, you can access by `#qt.get(key: name)` as the following. Highlight the `context`. 
+
+```typst 
+#context qt.get(key: "ms")
+```
+
+<img alt="qt.get() to see the properties" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image12.png"/>
+
+Lastly, you can set the property like `set-quantity` function by using the analogous `#qt.set-property(key, ..properties)`, such as 
+
+```typst 
+What is the value of $pi$? \
+// too long number!
+It is #qt.new("pi", calc.pi, is-exact: true)  \
+Oh, too long,  \
+// set the displayed figure number
+#qt.set-property("pi", display-figures: 4) 
+It is now only #qt.display("pi")
+```
+
+<img alt="set the quantity with qt.set-property" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image13.png"/>
 
 ## Available Calculation Methods 
 - `neg(a)` negate a number, returns negative value of `a`. 

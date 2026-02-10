@@ -81,97 +81,161 @@
   return formatted.replace(sym.minus, "-")
 }
 
-#let info-num(value, figures: auto, places: auto) = {
-  let (mantissa, exp) = (value, "")
-  let (integer, dec) = (value, "")
-  if value.contains("e") {
-    (mantissa, exp) = value.split("e")
+#let negative-pattern = regex("[" + ("-", sym.minus).join() + "]")
+
+/// Rules for significant figures
+/// 1. For decimals:
+///   - zero before "." does not count.
+///   - zero after "." before number that is not 0 does not count.
+///   - zero after "." after number that is not 0 count.
+/// 2. For whole numbers:
+///   - zero after a number that is not a zero is always count.
+#let decimal-info(number, separator: ".") = {
+  let numbers = number.split(separator)
+  assert(numbers.len() == 2, message: "decimals must contain a decimal separator")
+  // counting the significant figures
+  let is-significant = false
+  let figures = 0
+  let (before-sep, after-sep) = numbers
+  for c in before-sep.clusters() {
+    if c != "0" { is-significant = true }
+    if is-significant { figures += 1 }
   }
-  if mantissa.contains(".") {
-    (integer, dec) = mantissa.split(".")
+  // counting the decimal places
+  let places = 0
+  for c in after-sep.clusters() {
+    if c != "0" { is-significant = true }
+    if is-significant { figures += 1 }
+    places += 1
   }
 
-  if figures == auto {
-    figures = integer.len() + dec.len()
-    if integer.contains("-") {
-      figures -= 1
-    }
+  return (places: places, figures: figures)
+}
+
+#let integer-info(number) = {
+  let is-significant = false
+  let figures = 0
+  for c in number.clusters() {
+    if c != "0" { is-significant = true }
+    figures += 1
   }
-  if places == auto {
-    places = dec.len()
+
+  return (figures: figures, places: 0)
+}
+
+#let e-notation-info(number, decimal-separator: ".") = {
+  assert(number.contains("e"), message: "e-notation is only for numbers written in scientific notation.")
+
+  let info = (:)
+  let (preexponential, exponent) = number.split("e")
+  if preexponential.contains(decimal-separator) {
+    info = decimal-info(preexponential, separator: decimal-separator)
+  } else {
+    info = integer-info(preexponential)
   }
-  return (
-    places: places,
-    figures: figures,
-    integer: integer,
-    decimal: dec,
-    mantissa: mantissa,
-    exponent: exp,
-  )
+  // handling 1.0e1 case.
+  info.places -= eval(exponent)
+  if info.places < 0 { info.places = 0 }
+  return info
+}
+
+#let count-significant(number, decimal-separator: ".") = {
+  number = number.trim(negative-pattern)
+  if number.contains("e") { return e-notation-info(number) }
+  if number.contains(decimal-separator) { return decimal-info(number, separator: decimal-separator) }
+  return integer-info(number)
+}
+
+#let number-info(value, figures: auto, places: auto, decimal-separator: ".") = {
+  let info = count-significant(value, decimal-separator: decimal-separator)
+  if type(figures) == int {
+    info.figures = figures
+  }
+  if type(places) == int {
+    info.places = places
+  }
+  return info
 }
 
 #let quantity(
   value,
   rounder: it => it,
   ..args,
-  unit-sep: " ",
+  unit-separator: " ",
   places: auto,
   figures: auto,
   magnitude-limit: 4,
-  round-mode: "places",
+  round-mode: auto,
   method: auto,
   display: auto,
   source: none,
+  is-exact: false,
 ) = {
   let formatting = args.named()
   let arr-units = args.pos()
 
   value = str(value)
   // Extract information about rounding
-  let (figures, places) = info-num(value, figures: figures, places: places)
+  // the `figures` and `places` can by-pass the function if specified as integers.
+  let info = number-info(value, figures: figures, places: places)
 
-  let digits = if round-mode == "places" { places } else { figures }
+  // choose a way to format the number.
+  if round-mode == auto {
+    if type(figures) == int and places == auto {
+      round-mode = "figures"
+    } else if type(places) == int and figures == auto {
+      round-mode = "places"
+    } else if places == auto and figures == auto {
+      if value.contains("e") { 
+        figures = info.figures
+        round-mode = "figures" 
+      } else { 
+        places = info.places
+        round-mode = "places" 
+      }
+    } else {
+      round-mode = "places"
+    }
+  }
 
-  value = scientify(eval(value), figures: figures, magnitude-limit: magnitude-limit)
+  let digits = if round-mode == "figures" { figures } else { places }
 
+  value = scientify(eval(value), figures: info.figures, magnitude-limit: magnitude-limit)
 
-  let qty = zero.num
+  let formatter = zero.num
   let value = rounder(value)
-
+  // parsing units
   let units = ()
   if arr-units.len() >= 1 {
-    for u in arr-units {
-      if type(u) == str {
-        units += parse-unit(u, sep: unit-sep)
-      } else if type(u) == array {
-        assert(u.len() == 2, message: "The custom unit in an array must be in the form `(unit, exponent)`.")
-        units.push(u)
+    // process the units
+    for unit in arr-units {
+      if type(unit) == str {
+        units += parse-unit(unit, sep: unit-separator)
+      } else if type(unit) == array {
+        assert(unit.len() == 2, message: "The custom unit in an array must be in the form `(unit, exponent)`.")
+        units.push(unit)
       } else {
-        units.push((u, 1))
+        units.push((unit, 1))
       }
     }
-    qty = zi.declare(..units)
+    // if there is at least a unit, then switch to `zi`.
+    formatter = zi.declare(..units)
   }
 
   let default-format = (
     round: (mode: round-mode, precision: digits),
   )
 
-  if display == auto {
-    display = qty(value, ..default-format, ..formatting)
-  }
-
-  if method == auto {
-    method = display
-  }
+  if display == auto { display = formatter(value, ..default-format, ..formatting) }
+  if method == auto { method = display }
 
   (
     value: eval(value),
     unit: units,
     // deciman places
-    places: places,
+    places: info.places,
     // significant figures
-    figures: figures,
+    figures: info.figures,
     // formatted value
     "show": zero.num(value, ..default-format, ..formatting),
     // verbatim value
@@ -182,11 +246,31 @@
     method: method,
     source: source, // for formatting methods
     round-mode: round-mode,
+    is-exact: is-exact
   )
 }
 
 #let _get(prop, ..qnts) = {
   qnts.pos().map(q => q.at(prop))
+}
+
+#let exact(
+  value, 
+  ..args, 
+  figures: 99, 
+  places: 99,
+  display-figures: auto, 
+  display-places: auto,
+) = {
+  let formatting = args.named() 
+  let units = args.pos() 
+  quantity(
+    value, 
+    ..units, 
+    figures: display-figures, 
+    places: display-places, 
+    is-exact: true,
+  ) + (figures: figures, places: places)
 }
 
 #let set-quantity(q, ..formatting) = {
@@ -198,7 +282,6 @@
     q.display = auto
     q.method = auto
   }
-  quantity(value, ..unit, ..q, ..formatting, display: auto)
+  let func = if q.is-exact { exact } else { quantity }
+  func(value, ..unit, ..q, ..formatting, display: auto)
 }
-
-#let exact = quantity.with(figures: 99)
