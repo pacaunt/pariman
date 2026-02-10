@@ -1,8 +1,9 @@
 #import "quantity.typ" as q
+#import "calculation.typ": exact
 
 #let _all-quantities = state("_pariman:0.2.0_local_quantities", (:))
 
-#let _declare(name, value, ..args) = {
+#let _declare(is-exact: false, name, value, ..args) = {
   let update = it => it
   let quantity = none
 
@@ -16,10 +17,10 @@
     }
     quantity = auto
   } else {
-    quantity = q.quantity(value, ..args)
+    quantity = if is-exact { exact(value, ..args) } else { q.quantity(value, ..args) }
     update = dict => dict + ((name): quantity)
   }
-  return (update: update, quantity: quantity, name: name)
+  return (update: update, quant: quantity, name: name)
 }
 
 #let new(
@@ -31,10 +32,10 @@
   ..args,
   displayed: true,
 ) = {
-  let (quantity, name, update) = _declare(name, value, ..args)
+  let (quant, name, update) = _declare(name, value, ..args)
   _all-quantities.update(update)
   if displayed {
-    if quantity == auto { context _all-quantities.get().at(name).display } else { quantity.display }
+    if quant == auto { context _all-quantities.get().at(name).display } else { quant.display }
   }
 }
 

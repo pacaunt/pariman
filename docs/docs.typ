@@ -168,6 +168,18 @@ Second conversion:
 $ v2.method = v2.display $
 ```
 
+== In-Text Quantity Declaration (`qt` Module)
+This module provides a top-layer functions that makes declaration of the quantities can be done at the same time as showing the formatted quantities. Declaration can be done by `qt.new()` function, which receives the same argument set as the `quantity` constructor, but with an additional, positional argument: its key/name. This name is important because it will be used to retrieve the value declared for further calculations or updates.  
+```example 
+// Syntax: #qt.new(name, value, ..units)
+A chemist added #qt.new("mA", "1.050", "g")
+of A into a beaker filled with 
+#qt.new("Vw", "100", "mL") of water. 
+```
+Moreover, this `#qt.new` function also receives the following named options: 
+- `displayed` (bool, default: `true`) Whether to display the declared quantity immediately. 
+- `is-exact` (bool, default: `false`) Whether to set the specified quantity as an exact value (like declaring by `exact` function).
+
 = Available Calculation Methods 
 - `neg(a)` negate a number, returns negative value of `a`. 
 - `add(..q)` addition. Error if the unit of each added quantity has different units. Returns the sum of all `q`.
@@ -180,5 +192,6 @@ $ v2.method = v2.display $
 - `ln(a)` returns the natural log of `a`. The quantity `a` must be unitless. 
 - `log(a, base: 10)` returns the logarithm of `a` on base `base`. Error if `a` is not unitless.
 - `root(a, n)` returns the $n$th root of `a`. If `n` is not an integer, then `a` must be unitless. 
-- `solver(func, init: none)` solves the function that is written in the form $f(x) = 0$. It returns another quantity that has the same dimension as the `init` value. //
+- `solver(func, init: none)` solves the function that is written in the form $f(x) = 0$. It returns another quantity that has the same dimension as the `init` value. 
+
 
