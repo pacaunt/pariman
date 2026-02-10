@@ -11,6 +11,7 @@ Or install the package locally by cloning this package into your local package l
 
 ## Usage
 ### The `quantity` function
+
 The package provides a dictonary-based element called `quantity`. This `quantity` can be used as a number to all of the calculation functions in Pariman's framework. The quantity is declared by specify its value and unit.
 
 ```typst
@@ -32,6 +33,7 @@ The formatted value and unit: #b.display  \
 After new fraction mode: #b.display
 ```
 <img alt="setting the unit" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image2.png"/>
+
 Pariman loads the `zero` package automatically, so the the unit formatting options can be modified by `zero.set-xxx` functions.
 
 For exact values like integers, pi, or other constants, that should not be counted as significant figures, Pariman have the `#exact` function for exact number quantities. The `#exact` function does not accept unit and has 99 significant figures.
@@ -42,6 +44,7 @@ The value: #pi.display \
 Significant figures: #pi.figures
 ```
 <img alt="exact number" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image3.png"/>
+
 Note that the `quantity` function can accept only the value for the unitless quantoity.
 
 ### The `calculation` module
