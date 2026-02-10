@@ -1,11 +1,11 @@
-#import "quantity.typ": _get, quantity, exact, set-quantity
+#import "quantity.typ": _get, exact, quantity, set-quantity
 #import "converter.typ": invert-unit, multiply-unit, operate-unit, power-unit, root-unit
 #import "utils.typ"
 
 #let neg(
   qnt,
   method: qnt => {
-    $-$ + qnt.method
+    $-$ + if qnt.source == "add" { $(#qnt.method)$ } else { qnt.method }
   },
   ..formatting,
 ) = {
@@ -16,14 +16,18 @@
     figures: figures,
     round-mode: "figures",
     method: method(qnt),
-    ..formatting,
+    ..formatting.named(),
   )
 }
 
 #let add(
   ..qnts,
   method: qnts => {
-    qnts.map(q => q.method).join($+$)
+    qnts
+      .map(q => {
+        if q.value < 0 { $(#q.method)$ } else { q.method }
+      })
+      .join($+$)
   },
 ) = {
   let formatting = qnts.named()
@@ -270,18 +274,19 @@
 
   make-quantity(
     utils.newton-solver(
-      init: init.value, 
-      tolerance: tolerance, 
-      max-iterations: max-iterations, 
-      new-func
-    ), 
-    origin: init
+      init: init.value,
+      tolerance: tolerance,
+      max-iterations: max-iterations,
+      new-func,
+    ),
+    origin: init,
   )
 }
 
 #let new-factor(from, to, ..formatting) = {
-  let (from, to) = (from, to).map(n => if type(n) != dictionary { quantity(..n) } else { n })
+  let (from, to) = (from, to).map(n => if type(n) != dictionary { exact(..n) } else { n })
   let inverted = div(from, to, figures: 10, ..formatting)
   div(to, from, figures: 10, ..formatting) + (inv: inverted)
 }
+
 

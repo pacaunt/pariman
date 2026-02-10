@@ -38,3 +38,8 @@
 #a.display
 
 #set-quantity(ep, value: 2).display
+
+#let a = quantity("0.24", "m")
+#a
+#calculation.neg(a)
+
