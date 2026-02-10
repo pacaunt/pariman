@@ -13,6 +13,7 @@
 
 #show: zebraw
 #show raw.where(lang: "example"): it => {
+  set block(breakable: false)
   grid(
     columns: (1fr,) * 2,
     column-gutter: 1em,
