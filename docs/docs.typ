@@ -1,7 +1,7 @@
 #import "../export.typ" as pariman: *
 #import "@preview/zebraw:0.6.1": zebraw
 #let eval-example = eval.with(mode: "markup", scope: dictionary(pariman))
-
+#set page(numbering: "1")
 #set text(font: "New Computer Modern")
 
 #show math.equation: set text(weight: 400)
@@ -33,7 +33,7 @@
   #info.description
 ]
 
-#outline()
+#outline(depth: 2)
 
 = Installation
 Import the package by
@@ -214,8 +214,19 @@ Oh, too long,  \
 #qt.set-property("pi", display-figures: 4) 
 It is now only #qt.display("pi")
 ```
+= References 
 
-= Available Calculation Methods 
+== The Constructors
+
+#import "@preview/tidy:0.4.3"
+#let docs = tidy.parse-module(read("../src/quantity.typ"))
+#{
+  set heading(numbering: none)
+  tidy.show-module(docs, omit-private-definitions: true, omit-empty-param-descriptions: true, show-module-name: false)
+}
+
+== Available Calculation Methods 
+All functions in calculation module also accept the same format options in the `quantity` function for formatting the result quantity.
 - `neg(a)` negate a number, returns negative value of `a`. 
 - `add(..q)` addition. Error if the unit of each added quantity has different units. Returns the sum of all `q`.
 - `sub(a, b)` subtraction. Error if the unit of each quantity is not the same. Returns the quantity of `a - b`. 

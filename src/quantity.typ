@@ -81,13 +81,13 @@
 
 #let negative-pattern = regex("[" + ("-", sym.minus).join() + "]")
 
-/// Rules for significant figures
-/// 1. For decimals:
-///   - zero before "." does not count.
-///   - zero after "." before number that is not 0 does not count.
-///   - zero after "." after number that is not 0 count.
-/// 2. For whole numbers:
-///   - zero after a number that is not a zero is always count.
+// Rules for significant figures
+// 1. For decimals:
+//    - zero before "." does not count.
+//    - zero after "." before number that is not 0 does not count.
+//    - zero after "." after number that is not 0 count.
+// 2. For whole numbers:
+//    - zero after a number that is not a zero is always count.
 #let decimal-info(number, separator: ".") = {
   let numbers = number.split(separator)
   assert(numbers.len() == 2, message: "decimals must contain a decimal separator")
@@ -188,20 +188,73 @@
   }
 }
 
-// Main constructor
+/// Constructor for quantities. 
+/// -> dictionary
 #let quantity(
+  /// The numerical value of the quantity. 
+  /// It is recommended to specify by `str` representation of the value 
+  /// to retain most of the information, like significant figures, number of decimal places
+  /// or scientific notations.
+  /// -> str | float
   raw-value,
+
+  /// The units (positional arguments) or format options (named arguments) to the units.
+  /// The unit must be a string, like `"km/s^2 N"`, or an array of the
+  /// unit representation and its exponent, like `($angstrom$, 1)`.
+  /// 
+  /// The format options will be passed to `zero` package directly.
+  /// -> any
   ..args,
+
+  /// The separator between units for string of unit input 
+  /// -> str
   unit-separator: " ",
+
+  /// Number of decimal places to display.
+  /// If this is `auto`, it will determine from the input value.
+  /// -> auto | int
   places: auto,
+
+  /// Number of significant figures to display. 
+  /// If this is `auto`, it will determine from the input value.
+  /// -> auto | int
   figures: auto,
+
+  /// For very large or small value whose magnitude are exceeded the absolute value of this option, 
+  /// `pariman` will automatically convert it to be in a scientific notation. 
+  /// -> int
   magnitude-limit: 4,
+
+  /// Specify which way to round the numerical value.
+  /// The possible options are `"figures"` for significant figures, 
+  /// `"places"` for number of decimal places, 
+  /// `auto` for a smart default. 
+  /// 
+  /// If this is set to `auto`, it will determine whether `figures` or `places` are specified. 
+  /// - If `figures` is an integer, this will resolve to `"figures"`. 
+  /// - If `places` is an integer, this will resolve to `"places"`. 
+  /// - If both `figures` and `places` are specified, the default behavior is `"places"`.
+  /// 
+  /// -> str
   round-mode: auto,
+
+  /// Way to display this value when using `quantity.method` or `qt.metod(..)`.
+  /// 
+  /// -> any
   method: auto,
+
+  /// Way to display this value when using `quantity.display` or `qt.display(..)`.
+  /// 
+  /// -> any
   display: auto,
-  source: none,
+
+  /// The additional number of significant figures or decimal places to keep on for 
+  /// more precise calculation. This number will be added to `figures` or `places` when rounding the input value. 
+  /// 
+  /// -> int
   precision: 0,
   is-exact: false,
+  source: none,
 ) = {
   let formatting = args.named()
   let arr-units = args.pos()
@@ -301,12 +354,25 @@
   qnts.pos().map(q => q.at(prop))
 }
 
+/// Exact value quantities
 #let exact(
+  /// The value passed to the `quantity` function. 
+  /// -> float | str 
   value,
+  /// The units and format options for displaying the quantity. Same as `quantity`'s parameters.
+  /// -> any
   ..args,
+  /// Default significant figures. 
+  /// -> int 
   figures: 99,
+  /// Default decimal places 
+  /// -> int
   places: 99,
+  /// The displaying significant figures. 
+  /// -> auto | int 
   display-figures: auto,
+  /// The displaying decimal places. 
+  /// -> auto | int
   display-places: auto,
 ) = {
   let formatting = args.named()
@@ -323,22 +389,44 @@
   )
 }
 
-#let set-quantity(q, ..formatting) = {
-  let value = q.remove("value")
-  let unit = q.remove("unit")
+/// Reset or modify the behavior of `exact` or `quantity` functions.
+/// -> dictionary
+#let set-quantity(
+  /// The quantity. 
+  /// -> dictionary
+  qty, 
+  /// New units.
+  /// -> str | array
+  units: auto, 
+  /// New value
+  /// -> str | float
+  value: auto,
+  /// Format options. Same as `quantity`'s or `exact`'s.
+  ..formatting
+) = {
+  let old-value = qty.remove("value")
+  let old-units = qty.remove("unit")
+  let is-new-format = false
   // set-quantity can change the unit and the value.
   let formatting = formatting.named()
-  if "value" in formatting {
-    value = formatting.remove("value")
-    q.display = auto
-    q.method = auto
+  if value == auto { value = old-value } else { is-new-format = true }
+  if units == auto { units = old-units } else { is-new-format = true }
+  // whether to reset the displaying methods and display value.
+  if is-new-format {
+    qty.method = auto 
+    qty.display = auto
   }
-  if "unit" in formatting {
-    unit = formatting.remove("unit")
-    q.display = auto
-    q.method = auto
+  // capture the unit
+  if units != auto {
+    assert(
+      type(units) in (array, str), 
+      message: "The units must be specified as a string of units or an array of units."
+    )
+    if type(units) == str or (
+      units.len() == 2 and type(units.last()) == int 
+    ) { units = (units,) }
   }
   // retain the original function
-  let func = if q.is-exact { exact } else { quantity }
-  func(value, ..unit, ..q, ..formatting, display: auto)
+  let func = if qty.is-exact { exact } else { quantity }
+  func(value, ..units, ..qty, ..formatting, display: auto)
 }
