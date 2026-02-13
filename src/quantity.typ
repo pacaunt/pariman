@@ -10,29 +10,26 @@
 /// - "^-1" is possible
 /// - "1/s" is possible
 /// Output: a tuples of length two for which the first element is the unit and the second element is the exponent.
-#let _parse-a-unit(u, is-denom: false) = {
-  let splitted = u.split("^")
+#let _parse-a-unit(single-unit, is-denom: false) = {
+  let splitted = single-unit.split("^")
+
   assert(splitted.len() <= 2, message: "Each unit must have one, integer exponent.")
+
   let name = splitted.first()
-  let exponent
+  let exponent = if splitted.len() == 2 { eval(splitted.last()) } else { 1 }
+  if is-denom { exponent = -exponent }
 
-  if splitted.len() == 2 {
-    exponent = eval(splitted.last())
-  } else {
-    exponent = 1
-  }
-
-  if is-denom {
-    exponent = -exponent
-  }
-  (name, exponent)
+  return (name, exponent)
 }
 
-#let _parse-string-unit(string, sep: " ") = {
-  let splitted = string.split("/")
+#let _parse-string-unit(unit-string, sep: " ") = {
+  let splitted = unit-string.split("/")
   let noms = ""
   let denoms = ""
-  assert(splitted.len() <= 2, message: "Slash as prefix for denominator must not be used more than once.")
+  assert(
+    splitted.len() <= 2,
+    message: "Slash as prefix for denominator must not be used more than once.",
+  )
   if splitted.len() == 2 {
     (noms, denoms) = splitted
   } else {
@@ -41,13 +38,14 @@
   let arr-noms = noms.split(sep).map(_parse-a-unit)
   let arr-denoms = denoms.split(sep).map(_parse-a-unit.with(is-denom: true))
 
-  arr-noms + arr-denoms
+  return arr-noms + arr-denoms
 }
 
 #let parse-unit(string, sep: " ") = {
   let results = (:)
   let short-hands = ("oC": $degree C$, "oF": $degree F$, "oR": $degree R$)
   for (name, exp) in _parse-string-unit(string, sep: sep) {
+    // clear the case of s^-1 and 1/s
     if name not in ("1", "") and exp != 0 {
       if name not in results {
         results.insert(name, exp)
@@ -157,9 +155,42 @@
   return info
 }
 
+// rounding the number based on significant rounding mode.
+#let _prepare(
+  raw-number,
+  figures: auto,
+  places: auto,
+  round-mode: auto,
+  precision: 1,
+) = {
+  if round-mode == auto {
+    if figures == auto and places == auto {
+      return raw-number
+    } else if type(figures) == int and places == auto {
+      return utils.figures-rounder(raw-number, digits: precision + figures)
+    } else if type(places) == int and figures == auto {
+      return utils.places-rounder(raw-number, digits: precision + places)
+    } else if type(places) == int and type(figures) == int {
+      panic("Please choose a rounding method: `figures` or `places`.")
+    }
+  } else if round-mode == "figures" {
+    if figures == auto { figures = 3 }
+    return utils.figures-rounder(raw-number, digits: precision + figures)
+  } else if round-mode == "places" {
+    if places == auto {
+      if figures == auto { figures = 3 }
+      return utils.figures-rounder(raw-number, digits: precision + figures)
+    } else {
+      return utils.places-rounder(raw-number, digits: precision + places)
+    }
+  } else {
+    panic("Unknown round-mode: " + rerp(round-mode))
+  }
+}
+
+// Main constructor
 #let quantity(
-  value,
-  rounder: it => it,
+  raw-value,
   ..args,
   unit-separator: " ",
   places: auto,
@@ -169,16 +200,31 @@
   method: auto,
   display: auto,
   source: none,
+  precision: 0,
   is-exact: false,
 ) = {
   let formatting = args.named()
   let arr-units = args.pos()
+  // keep the numerical value separately.
+  if type(raw-value) != str {
+    raw-value = _prepare(
+      raw-value,
+      round-mode: round-mode,
+      figures: figures,
+      places: places,
+      precision: precision,
+    )
+  } else {
+    raw-value = eval(raw-value)
+  }
 
-  value = str(value)
+  // enable the value to be parsed
+  let value = str(raw-value)
   // Extract information about rounding
   // the `figures` and `places` can by-pass the function if specified as integers.
   let info = number-info(value, figures: figures, places: places)
-
+  // format the value if it is very big or very small.
+  let value = scientify(raw-value, figures: info.figures, magnitude-limit: magnitude-limit)
   // choose a way to format the number.
   if round-mode == auto {
     if type(figures) == int and places == auto {
@@ -186,24 +232,22 @@
     } else if type(places) == int and figures == auto {
       round-mode = "places"
     } else if places == auto and figures == auto {
-      if value.contains("e") { 
-        figures = info.figures
-        round-mode = "figures" 
-      } else { 
-        places = info.places
-        round-mode = "places" 
+      if value.contains("e") {
+        round-mode = "figures"
+      } else {
+        round-mode = "places"
       }
+    } else if value.contains("e") {
+      // if it was in scientific form, use `figures` rounding mode.
+      round-mode = "figures"
     } else {
       round-mode = "places"
     }
   }
 
-  let digits = if round-mode == "figures" { figures } else { places }
-
-  value = scientify(eval(value), figures: info.figures, magnitude-limit: magnitude-limit)
+  let digits = if round-mode == "figures" { info.figures } else { info.places }
 
   let formatter = zero.num
-  let value = rounder(value)
   // parsing units
   let units = ()
   if arr-units.len() >= 1 {
@@ -212,7 +256,10 @@
       if type(unit) == str {
         units += parse-unit(unit, sep: unit-separator)
       } else if type(unit) == array {
-        assert(unit.len() == 2, message: "The custom unit in an array must be in the form `(unit, exponent)`.")
+        assert(
+          unit.len() == 2,
+          message: "The custom unit in an array must be in the form `(unit, exponent)`.",
+        )
         units.push(unit)
       } else {
         units.push((unit, 1))
@@ -230,7 +277,7 @@
   if method == auto { method = display }
 
   (
-    value: eval(value),
+    value: raw-value,
     unit: units,
     // deciman places
     places: info.places,
@@ -246,7 +293,7 @@
     method: method,
     source: source, // for formatting methods
     round-mode: round-mode,
-    is-exact: is-exact
+    is-exact: is-exact,
   )
 }
 
@@ -255,33 +302,43 @@
 }
 
 #let exact(
-  value, 
-  ..args, 
-  figures: 99, 
+  value,
+  ..args,
+  figures: 99,
   places: 99,
-  display-figures: auto, 
+  display-figures: auto,
   display-places: auto,
 ) = {
-  let formatting = args.named() 
-  let units = args.pos() 
-  quantity(
-    value, 
-    ..units, 
-    figures: display-figures, 
-    places: display-places, 
-    is-exact: true,
-  ) + (figures: figures, places: places)
+  let formatting = args.named()
+  let units = args.pos()
+  (
+    quantity(
+      value,
+      ..units,
+      figures: display-figures,
+      places: display-places,
+      is-exact: true,
+    )
+      + (figures: figures, places: places)
+  )
 }
 
 #let set-quantity(q, ..formatting) = {
   let value = q.remove("value")
   let unit = q.remove("unit")
+  // set-quantity can change the unit and the value.
   let formatting = formatting.named()
   if "value" in formatting {
     value = formatting.remove("value")
     q.display = auto
     q.method = auto
   }
+  if "unit" in formatting {
+    unit = formatting.remove("unit")
+    q.display = auto
+    q.method = auto
+  }
+  // retain the original function
   let func = if q.is-exact { exact } else { quantity }
   func(value, ..unit, ..q, ..formatting, display: auto)
 }

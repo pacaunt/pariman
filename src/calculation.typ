@@ -35,9 +35,13 @@
   let units = _get("unit", ..qnts)
   let values = _get("value", ..qnts)
   let places = _get("places", ..qnts)
-  assert(units.all(i => i == units.first()), message: "Adding quantities only allow for the same units.")
-  let result = values.sum()
+
+  assert(
+    units.all(i => i.sorted() == units.first().sorted()),
+    message: "Adding quantities only allow for the same units.",
+  )
   let new-places = calc.min(..places)
+  let result = values.sum()
   quantity(
     result,
     ..units.at(0),
@@ -53,16 +57,22 @@
   q1,
   q2,
   method: (q1, q2) => {
+    if q1.source in ("sub", "add") { q1.method = $(#q1.method)$ }
+    if q2.source in ("sub", "add") { q2.method = $(#q2.method)$ }
     $#q1.method - #q2.method$
   },
   ..formatting,
 ) = {
   let (v1, v2) = _get("value", q1, q2)
   let (u1, u2) = _get("unit", q1, q2)
-  assert(u1 == u2, message: "Subtraction requires quantities in the same unit.")
+  assert(
+    u1.sorted() == u2.sorted(),
+    message: "Subtraction requires quantities in the same unit.",
+  )
   let places = _get("places", q1, q2)
-  let result = v1 - v2
+  
   let new-places = calc.min(..places)
+  let result =v1 - v2
   quantity(
     result,
     ..u1,
@@ -214,6 +224,7 @@
   quantity(
     value,
     places: new-places,
+    rounder: calc.round.with(digits: new-places),
     round-mode: "places",
     method: method(base, qnt),
     ..formatting,

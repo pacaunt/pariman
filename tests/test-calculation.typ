@@ -70,6 +70,27 @@
 #let pi = exact(calc.pi, display-figures: 3)
 #pi.display
 
+#qt.new("H", "2.0")
+#qt.update("H", q => {
+  calculation.mul(q.H, m-km)
+})
+#qt.set-property("H", method: auto)
+#context qt.get(key: "H").method
+
+#calculation.add(
+  quantity("1.0", ("m", 1), ("L", -1)),
+  quantity("1.0", ("L", -1), ("m", 1)),
+)
+
+#quantity("0.000676", round-mode: "figures").display
+
+#sub(
+  quantity("0.0003"), 
+  quantity("0.00001"),
+  precision: 1
+)
+
+#{ calc.round(calc.pi * 10, digits: 8) }
 // positive exponent
 // negative exponent
 // very large number
