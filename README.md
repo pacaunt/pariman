@@ -5,11 +5,13 @@ A Framework on Engineering Calculation With Units in Typst. Featured with unit a
 ## Installation
 Import the package by
 ```typst
-#import "@preview/pariman:0.2.0": *
+#import "@preview/pariman:0.2.1": *
 ```
 Or install the package locally by cloning this package into your local package location.
 
 ## Usage
+For a comprehensive documentation, you can refer to the [docs](https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/docs.pdf).
+
 ### The `quantity` function
 
 The package provides a dictonary-based element called `quantity`. This `quantity` can be used as a number to all of the calculation functions in Pariman's framework. The quantity is declared by specify its value and unit.
@@ -206,6 +208,7 @@ It is now only #qt.display("pi")
 <img alt="set the quantity with qt.set-property" src="https://github.com/pacaunt/pariman/blob/fee0118b24e658604d8b9f05f0834963a3674d51/docs/image13.png"/>
 
 ## Available Calculation Methods 
+All functions in calculation module also accept the same format options in the `quantity` function for formatting the result quantity.
 - `neg(a)` negate a number, returns negative value of `a`. 
 - `add(..q)` addition. Error if the unit of each added quantity has different units. Returns the sum of all `q`.
 - `sub(a, b)` subtraction. Error if the unit of each quantity is not the same. Returns the quantity of `a - b`. 
