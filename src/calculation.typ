@@ -181,7 +181,7 @@
   qnt,
   n,
   method: (q, n) => {
-    $(#q.method)^(1/n)$
+    $(#q.method)^(1/#n)$
   },
   ..formatting,
 ) = {
