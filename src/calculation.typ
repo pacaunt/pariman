@@ -10,14 +10,14 @@
   ..formatting,
 ) = {
   let (value, unit, figures) = qnt
-  quantity(
+  let q-result = quantity(
     -value,
     ..unit,
     figures: figures,
     round-mode: "figures",
     method: method(qnt),
-    ..formatting.named(),
   )
+  set-quantity(q-result, ..formatting.named())
 }
 
 #let add(
@@ -42,15 +42,15 @@
   )
   let new-places = calc.min(..places)
   let result = values.sum()
-  quantity(
+  let q-result = quantity(
     result,
     ..units.at(0),
     places: new-places,
     round-mode: "places",
     method: method(qnts),
     source: "add",
-    ..formatting,
   )
+  set-quantity(q-result, ..formatting)
 }
 
 #let sub(
@@ -73,15 +73,15 @@
   
   let new-places = calc.min(..places)
   let result =v1 - v2
-  quantity(
+  let q-result = quantity(
     result,
     ..u1,
     places: new-places,
     round-mode: "places",
     method: method(q1, q2),
     source: "sub",
-    ..formatting,
   )
+  set-quantity(q-result, ..formatting)
 }
 
 #let mul(
@@ -97,28 +97,28 @@
   let figures = _get("figures", ..qnts)
   let new-figures = calc.min(..figures)
   let new-units = multiply-unit(..units)
-  quantity(
+  let q-result = quantity(
     values.product(),
     ..new-units,
     figures: new-figures,
     round-mode: "figures",
     method: method(qnts),
     source: "mul",
-    ..formatting,
   )
+  set-quantity(q-result, ..formatting)
 }
 
 #let inv(qnt, method: qnt => $1/qnt.method$, ..formatting) = {
   let (value, unit, figures) = qnt
   let new-unit = invert-unit(..unit)
-  quantity(
+  let q-result = quantity(
     1 / value,
     ..new-unit,
     figures: figures,
     round-mode: "figures",
     method: method(qnt),
-    ..formatting,
   )
+  set-quantity(q-result, ..formatting)
 }
 
 #let div(
@@ -134,14 +134,14 @@
   let new-unit = multiply-unit(..u1, ..invert-unit(..u2))
   let figures = _get("figures", q1, q2)
   let new-figures = calc.min(..figures)
-  quantity(
+  let q-result = quantity(
     v1 / v2,
     ..new-unit,
     figures: new-figures,
     round-mode: "figures",
     method: method(q1, q2),
-    ..formatting,
   )
+  set-quantity(q-result, ..formatting)
 }
 
 #let pow(
@@ -167,7 +167,7 @@
     new-unit = ()
     new-figures = q2.places
   }
-  quantity(
+  let q-result = quantity(
     new-value,
     ..new-unit,
     figures: new-figures,
@@ -175,18 +175,19 @@
     method: method(q1, q2),
     ..formatting,
   )
+  set-quantity(q-result, ..formatting)
 }
 
 #let root(
   qnt,
   n,
   method: (q, n) => {
-    $(#q.method)^(1/n)$
+    $(#q.method)^(1/#n)$
   },
   ..formatting,
 ) = {
   let new-unit = root-unit(..qnt.unit, n)
-  quantity(
+  let q-result = quantity(
     calc.root(qnt.value, n),
     ..new-unit,
     figures: qnt.figures,
@@ -194,6 +195,7 @@
     method: method(qnt, n),
     ..formatting,
   )
+  set-quantity(q-result, ..formatting)
 }
 
 #let log(
@@ -221,7 +223,7 @@
     assert(base.unit == (), message: "Logarithm's base must be a dimensionless quantity.")
     value = calc.log(base: base.value, value)
   }
-  quantity(
+  let q-result = quantity(
     value,
     places: new-places,
     rounder: calc.round.with(digits: new-places),
@@ -229,6 +231,7 @@
     method: method(base, qnt),
     ..formatting,
   )
+  set-quantity(q-result, ..formatting)
 }
 
 #let ln(
@@ -239,13 +242,14 @@
   ..formatting,
 ) = {
   assert(qnt.unit == (), message: "Natural logarithm only accepts dimensionless quantity")
-  quantity(
+  let q-result = quantity(
     calc.ln(qnt.value),
     places: qnt.figures,
     round-mode: "places",
     method: method(qnt),
     ..formatting,
   )
+  set-quantity(q-result, ..formatting)
 }
 
 #let exp(
@@ -256,13 +260,14 @@
   ..formatting,
 ) = {
   assert(qnt.unit == (), message: "Exponentiation only accepts dimensionless quantity.")
-  quantity(
+  let q-result = quantity(
     calc.exp(qnt.value),
     figures: qnt.places,
     round-mode: "figures",
     method: method(qnt),
     ..formatting,
   )
+  set-quantity(q-result, ..formatting)
 }
 
 #let solver(
@@ -283,7 +288,7 @@
 
   let new-func(x) = func(make-quantity(x, origin: init)).value
 
-  make-quantity(
+  let q-result = make-quantity(
     utils.newton-solver(
       init: init.value,
       tolerance: tolerance,
@@ -292,6 +297,7 @@
     ),
     origin: init,
   )
+  set-quantity(q-result, ..formatting)
 }
 
 #let new-factor(from, to, ..formatting) = {
