@@ -43,7 +43,15 @@ For exact values like integers, pi, or other constants, that should not be count
 ```typst
 #let pi = exact(calc.pi)
 The value: #pi.display \
-Significant figures: #pi.figures
+Significant figures: #pi.figures \
+Decimal places: #pi.places 
+
+// The shorter version
+#let s-pi = exact(calc.pi, display-figures: 4)
+The displayed value: #s-pi.display \
+// does not effect the real significant figures 
+Significant figures: #s-pi.figures \
+Decimal places: #s-pi.places
 ```
 <img alt="exact number" src="https://github.com/pacaunt/pariman/blob/c6d2e6d7287fb85407a3e73fede0d4646a908a6b/docs/image3.png"/>
 
@@ -99,7 +107,8 @@ $
 <img alt="advanced methods" src="https://github.com/pacaunt/pariman/blob/c6d2e6d7287fb85407a3e73fede0d4646a908a6b/docs/image6.png"/>
 
 Sometimes, you may want to display your calculations with units omitted. The `quantity` function has a parameter `explicit` which is `true` by default. If this parameter is set to `false`, the unit of that quantity is ommitted for all of its calculation. 
-```example 
+
+```typst
 #let r = quantity("2.0e-5", "cm")
 // hide the unit in `method`.
 #let T = quantity(
