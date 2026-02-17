@@ -35,17 +35,20 @@
   let units = _get("unit", ..qnts)
   let values = _get("value", ..qnts)
   let places = _get("places", ..qnts)
+  let figures = _get("places", ..qnts)
 
   assert(
     units.all(i => i.sorted() == units.first().sorted()),
     message: "Adding quantities only allow for the same units.",
   )
   let new-places = calc.min(..places)
+  let new-figures = calc.min(..figures)
   let result = values.sum()
   let q-result = quantity(
     result,
     ..units.at(0),
     places: new-places,
+    figures: new-figures,
     round-mode: "places",
     method: method(qnts),
     source: "add",
@@ -70,13 +73,16 @@
     message: "Subtraction requires quantities in the same unit.",
   )
   let places = _get("places", q1, q2)
+  let figures = _get("figures", q1, q2)
   
   let new-places = calc.min(..places)
+  let new-figures = calc.min(..figures)
   let result =v1 - v2
   let q-result = quantity(
     result,
     ..u1,
     places: new-places,
+    figures: new-figures,
     round-mode: "places",
     method: method(q1, q2),
     source: "sub",
