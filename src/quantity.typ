@@ -387,6 +387,7 @@
       figures: display-figures,
       places: display-places,
       is-exact: true,
+      ..formatting,
     )
       + (figures: figures, places: places)
   )

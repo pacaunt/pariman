@@ -1,7 +1,7 @@
 #import "quantity.typ" as q
 #import "calculation.typ": exact
 
-#let _all-quantities = state("_pariman:0.2.0_local_quantities", (:))
+#let _all-quantities = state("_pariman:0.2.1_local_quantities", (:))
 
 #let _declare(is-exact: false, name, value, ..args) = {
   let update = it => it
