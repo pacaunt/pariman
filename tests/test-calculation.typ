@@ -108,3 +108,42 @@
 // power
 // root
 // newton-solver
+
+#let A = quantity("1.50e4", "1/s")
+#let Ea = quantity("50e3", "J/mol")
+#let R = quantity("8.314", "J/mol K")
+#let T = quantity("298", "K")
+
+Arrhenius equation is given by
+$ k = A e^(-E_a/(R T)) $
+This $k$, at $A = #A.display$, $E_a = #Ea.display$, and $T = #T.display$, we have
+#let k = {
+  import calculation: *
+  mul(A, 
+  exp(
+    div(
+      neg(Ea),
+      mul(R, T)
+    )
+  )
+  )
+}
+$ 
+  k &= #k.method \ 
+    &= #k.display
+$
+#let A = quantity(calc.pi, figures: 4, "K")
+
+$
+  #inv(A).method
+$
+
+#let B = quantity("0.0003", unit: "m")
+$
+  #div(B, quantity("1.0", "m")).display \
+  #pow(B, exact(2)).display wide #log(div(B, quantity("1.0", "m"))).display
+$
+
+$
+  #ln(exact(calc.e), places: 1).display
+$

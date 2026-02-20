@@ -474,6 +474,3 @@
   )
 }
 
-#let _get(prop, ..qnts) = {
-  qnts.pos().map(q => q.at(prop))
-}
