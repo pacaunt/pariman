@@ -461,10 +461,24 @@
   if "explicit-method" in formatting.keys() {
     formatting.method = auto
   }
+  if formatting
+    .keys()
+    .any(k => (
+      k
+        in (
+          "figures",
+          "places",
+          "display-figures",
+          "display-places",
+        )
+    )) {
+    formatting.display = auto
+  }
   if unit != auto or value != auto {
     formatting.display = auto
     formatting.method = auto
   }
+
   if unit == auto { unit = qty.unit }
   if value == auto { value = qty.value }
   let constructor = if qty.is-exact { _make-exact } else { _make-quantity }
