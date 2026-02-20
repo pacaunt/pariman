@@ -26,10 +26,58 @@
 
 #import "../src/utils.typ": *
 
+= Rounder 
 0.000 002 858 => #figures-rounder(0.000002858, digits: 4) \
 10 989 000 00 => #figures-rounder(1098900000, digits: 4)
 #let value = 0.00003 + 0.0001
 
+= `#_prepare`
 #_prepare(value, round-mode: "places") \
 #_prepare(value, round-mode: "places", places: 3) \
-#_prepare(value, round-mode: "figures", figures: 1) \
+#_prepare(value, round-mode: "figures", figures: 1) \ 
+#_prepare(calc.pi, round-mode: auto, figures: 4) \
+
+= `#_resolve-units`
+#_resolve-units("M") \
+#_resolve-units(("M",)) \
+#_resolve-units(("M", 2)) \
+#_resolve-units((("M", 2),)) \
+#_resolve-units((("M", 2), "B")) \
+#_resolve-units((("M", 2), ("B", -1))) \
+#_resolve-units("M/K^2") \
+#_resolve-units(("M", "1/K^2")) \
+#_resolve-units((("M", 3), "1/K^2")) \
+#_resolve-units(()) \
+#_resolve-units("") \
+
+= `#_resolve-round-mode`
+#_resolve-round-mode("12e3") \
+#_resolve-round-mode("1") \
+#_resolve-round-mode("200") \
+#_resolve-round-mode("0.0003") \
+#_resolve-round-mode("0") \
+#_resolve-round-mode("1.120") \
+
+= `#_make-quantity`
+== raw 
+#_make-quantity(value: 0) \
+#_make-quantity(value: 0.000000023452) \
+#_make-quantity(value: 0.002) \
+#_make-quantity(value: 200) \
+#_make-quantity(value: "0.020") \
+#_make-quantity(value: "2e4") \
+#_make-quantity(value: "6.02e-23") \
+#_make-quantity(value: calc.pi, figures: 4)
+
+== display 
+#_make-quantity(value: 0).display \
+#_make-quantity(value: 0.000000023452).display \
+#_make-quantity(value: 0.002).display \
+#_make-quantity(value: 200).display \
+#_make-quantity(value: "0.020").display \
+#_make-quantity(value: "2e4").display \
+#_make-quantity(value: "6.02e-23").display \
+#_make-quantity(value: calc.pi, figures: 4).display
+
+== `#_make-exact` 
+#_make-exact(value: calc.pi)

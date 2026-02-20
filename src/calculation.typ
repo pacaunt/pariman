@@ -77,7 +77,7 @@
   
   let new-places = calc.min(..places)
   let new-figures = calc.min(..figures)
-  let result =v1 - v2
+  let result = v1 - v2
   let q-result = quantity(
     result,
     ..u1,
@@ -87,7 +87,7 @@
     method: method(q1, q2),
     source: "sub",
   )
-  set-quantity(q-result, ..formatting)
+  set-quantity(q-result, value: result, unit: u1, ..formatting)
 }
 
 #let mul(
