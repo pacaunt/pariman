@@ -220,12 +220,15 @@
   value,
   places: auto,
   figures: auto,
+  round-mode: auto,
 ) = {
-  if type(figures) == int and places == auto { return "figures" } else if type(places) == int and figures == auto {
-    return "places"
-  } else if places == auto and figures == auto {
-    if value.contains("e") { return "figures" } else { return "places" }
-  } else if value.contains("e") { return "figures" } else { return "figures" }
+  if round-mode == auto {
+    if type(figures) == int and places == auto { return "figures" } else if type(places) == int and figures == auto {
+      return "places"
+    } else if places == auto and figures == auto {
+      if value.contains("e") { return "figures" } else { return "places" }
+    } else if value.contains("e") { return "figures" } else { return "figures" }
+  } else if value.contains("e") { "figures" } else { round-mode }
 }
 
 #let _make-quantity(
@@ -291,9 +294,9 @@
   // format the value if it is very big or very small.
   q.text = scientify(q.display-value, figures: q.figures, magnitude-limit: magnitude-limit)
   // choose a way to format the number.
-  if q.round-mode == auto {
-    q.round-mode = _resolve-round-mode(q.text, figures: q.figures, places: q.places)
-  }
+
+  q.round-mode = _resolve-round-mode(q.text, figures: q.figures, places: q.places, round-mode: q.round-mode)
+
 
   let digits = if q.round-mode == "figures" { q.figures } else { q.places }
   let default-format = (round: (mode: q.round-mode, precision: digits))
@@ -467,10 +470,10 @@
   let constructor = if qty.is-exact { _make-exact } else { _make-quantity }
 
   constructor(
-    ..qty, 
-    unit: unit, 
-    value: value, 
-    ..formatting
+    ..qty,
+    unit: unit,
+    value: value,
+    ..formatting,
   )
 }
 

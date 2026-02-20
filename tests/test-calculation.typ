@@ -147,3 +147,7 @@ $
 $
   #ln(exact(calc.e), places: 1).display
 $
+
+$
+  #sub(quantity("0.00032"), quantity("0")).display
+$
