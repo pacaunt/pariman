@@ -3,7 +3,7 @@
 = Installation
 Import the package by
 ```typst
-#import "@preview/pariman:0.1.0": *
+#import "@preview/pariman:0.2.1": *
 ```
 Or install the package locally by cloning this package into your local package location.
 
