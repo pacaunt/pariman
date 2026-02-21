@@ -5,7 +5,7 @@ A Framework on Engineering Calculation With Units in Typst. Featured with unit a
 ## Installation
 Import the package by
 ```typst
-#import "@preview/pariman:0.2.1": *
+#import "@preview/pariman:0.2.2": *
 ```
 Or install the package locally by cloning this package into your local package location.
 

@@ -47,6 +47,7 @@
     value: result,
     unit: units.at(0),
     places: new-places,
+    round-mode: "places",
     method: method(qnts),
     source: "add",
     ..formatting,
