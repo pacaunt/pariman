@@ -1,3 +1,4 @@
+//quantity.typ
 #import "utils.typ"
 /// The formatting functionality is provided by zero package.
 #import "@preview/zero:0.6.1" as zero
@@ -241,6 +242,9 @@
   round-mode: auto,
   method: auto,
   display: auto,
+  error: 0,
+  error-method: auto,
+  error-display: auto,
   precision: 15,
   explicit-method: true,
   source: none,
@@ -261,6 +265,12 @@
     source: source,
     round-mode: round-mode,
     is-exact: is-exact,
+    error: error,
+    error-display-value: error,
+    error-text: auto,
+    error-show: auto,
+    error-display: error-display,
+    error-method: error-method,
   )
   // resolve the value and change it into a text.
   if type(value) != str {
@@ -301,16 +311,44 @@
   let digits = if q.round-mode == "figures" { q.figures } else { q.places }
   let default-format = (round: (mode: q.round-mode, precision: digits))
 
+  // Resolve error the same as value, sharing rounding precision
+  // value & error always matching number of decimal places
+  if type(error) != str {
+    q.error = _prepare(
+      error,
+      round-mode: q.round-mode,
+      figures: q.figures,
+      places: q.places,
+      precision: precision,
+    )
+    q.error-display-value = _prepare(
+      error,
+      round-mode: q.round-mode,
+      figures: q.figures,
+      places: q.places,
+    )
+  } else {
+    q.error = eval(error)
+    q.error-display-value = q.error
+  }
+  q.error-text = scientify(q.error-display-value, figures: q.figures, magnitude-limit: magnitude-limit)
+
   // Extract the unit and resolve the formatter.
   q.unit = _resolve-units(q.unit, sep: unit-separator)
   let formatter = if q.unit == () { zero.num } else { zero.zi.declare(..q.unit) }
   formatter = formatter.with(..formatting)
 
   q.show = zero.num(q.text, ..default-format, ..formatting)
+  q.error-show = zero.num(q.error-text, ..default-format, ..formatting)
 
   if display == auto { q.display = formatter(q.text, ..default-format, ..formatting) }
+  if error-display == auto { q.error-display = formatter(q.error-text, ..default-format, ..formatting) }
+
   if method == auto { q.method = if explicit-method { q.display } else { q.show } }
   if type(method) == function { q.method = method(q) }
+
+  if error-method == auto { q.error-method = if explicit-method { q.error-display } else { q.error-show } }
+  if type(error-method) == function { q.error-method = error-method(q) }
 
   return q
 }
@@ -374,6 +412,7 @@
   /// Whether to show the unit when accessing the `method` property. This will effect only when setting BEFORE the calculation.
   /// -> bool
   explicit-method: true,
+  error:0,
   source: none,
   is-exact: false,
 ) = _make-quantity(
@@ -390,6 +429,7 @@
   explicit-method: explicit-method,
   source: source,
   is-exact: is-exact,
+  error: error,
   ..args.named(),
 )
 
@@ -473,10 +513,13 @@
         )
     )) {
     formatting.display = auto
+    formatting.error-display = auto
   }
   if unit != auto or value != auto {
     formatting.display = auto
     formatting.method = auto
+    formatting.error-display = auto
+    formatting.error-method = auto
   }
 
   if unit == auto { unit = qty.unit }
