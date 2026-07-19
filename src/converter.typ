@@ -1,3 +1,4 @@
+//converter.typ
 #let _get(property, ..qnts) = { qnts.pos().map(q => q.at(property)) }
 
 #let multiply-unit(..units) = {
@@ -43,4 +44,16 @@
 #let exp-signify(exp) = {
   if exp.value == 0 { return 1 }
   if exp.places == 0 { return exp.figures } else { exp.places }
+}
+
+// Root-sum-square (quadrature) combination of numeric error terms.
+// Each term should already be the full contribution (∂f/∂xi · σxi),
+// not just σxi.
+#let rss(..terms) = calc.sqrt(terms.pos().map(t => t * t).sum())
+
+// Builds `sqrt((term1)^2 + (term2)^2 + ...)` as typeset content, given
+// the content for each contribution. Mirrors `rss` but for display.
+#let rss-method(..terms) = {
+  let terms = terms.pos()
+  $sqrt(#terms.map(t => $(#t)^2$).join($+$))$
 }
