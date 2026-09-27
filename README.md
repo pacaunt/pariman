@@ -131,7 +131,7 @@ $ D_k &= #D-K.method \ &= #D-K.display $
 
 <img alt="hide unit in method" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image7.png"/>
 
-## Error Propagation 
+### Error Propagation 
 Thanks to [Ants-Aare]("https://github.com/Ants-Aare"), a contributor who implement this feature. Each quantity can have their own error, such as 
 ```typst
 #let l1 = quantity("2.0", "m", error: "0.20")
