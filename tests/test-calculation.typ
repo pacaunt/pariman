@@ -1,7 +1,7 @@
-#import "../src/calculation.typ": * 
+#import "../src/calculation.typ": *
 #import "../export.typ": *
 
-= Integers 
+= Integers
 #let a1 = quantity("1", "m")
 #let a2 = quantity("10", "m")
 #let a3 = quantity("100", "m")
@@ -23,7 +23,7 @@
 #let add2 = calculation.add(add1, a4)
 #add2.method = #add2.display
 
-== Neg 
+== Neg
 #let neg1 = calculation.neg(add1)
 #neg1.method = #neg1.display
 
@@ -48,16 +48,16 @@
 
 #let radius = quantity("1.20", "cm")
 #let area = {
-  import calculation: * 
+  import calculation: *
   mul(const-pi, pow(radius, exact(2)))
 }
 
 #area.method = #area.display
 
 #let m-km = new-factor(
-  quantity("1", "m"), 
-  exact("1000", "km")
-) 
+  quantity("1", "m"),
+  exact("1000", "km"),
+)
 
 #let length-km = calculation.mul(a1, m-km.inv)
 
@@ -85,9 +85,9 @@
 #quantity("0.000676", round-mode: "figures").display
 
 #sub(
-  quantity("0.0003"), 
+  quantity("0.0003"),
   quantity("0.00001"),
-  precision: 1
+  precision: 1,
 )
 
 #{ calc.round(calc.pi * 10, digits: 8) }
@@ -119,18 +119,16 @@ $ k = A e^(-E_a/(R T)) $
 This $k$, at $A = #A.display$, $E_a = #Ea.display$, and $T = #T.display$, we have
 #let k = {
   import calculation: *
-  mul(A, 
-  exp(
+  mul(A, exp(
     div(
       neg(Ea),
-      mul(R, T)
-    )
-  )
-  )
+      mul(R, T),
+    ),
+  ))
 }
-$ 
-  k &= #k.method \ 
-    &= #k.display
+$
+  k & = #k.method \
+    & = #k.display
 $
 #let A = quantity(calc.pi, figures: 4, "K")
 
@@ -150,4 +148,25 @@ $
 
 $
   #sub(quantity("0.00032"), quantity("0")).display
+$
+
+#pagebreak()
+
+
+#let Q1 = quantity("0.74")
+#let Q2 = quantity("1.00")
+#let e1 = quantity("0.40")
+#let e2 = quantity("-0.80")
+
+#let r1 = {
+  import calculation: *
+  mul(div(Q1, Q2), exp(mul(neg(e1), sub(e1, e2))))
+}
+#let r2 = {
+  import calculation: *
+  mul(div(Q2, Q1), exp(mul(neg(e2), sub(e2, e1))))
+}
+
+$ r_1 &= #r1.method = #r1.display \
+  r_2 &= #r2.method = #r2.display
 $

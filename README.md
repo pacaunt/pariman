@@ -53,7 +53,7 @@ The displayed value: #s-pi.display \
 Significant figures: #s-pi.figures \
 Decimal places: #s-pi.places
 ```
-<img alt="exact number" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image3.png"/>
+<img alt="exact number display example" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image3.png"/>
 
 Note that the `quantity` function can accept only the value for the unitless quantoity.
 
@@ -67,7 +67,7 @@ The `calculation` module provides a framework for calculations involving units. 
 The velocity is given by #v.display. \
 The unit is combined!
 ```
-<img alt="unit concatenation" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image4.png"/>
+<img alt="unit concatenation by using calculation functions" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image4.png"/>
 
 Moreover, each quantity also have a `method` property that can show its previous calculation.
 
@@ -78,7 +78,7 @@ Moreover, each quantity also have a `method` property that can show its previous
 From $V = #V.display$, and density $d = #d.display$, we have
 $ m = d V = #m.method = #m.display. $
 ```
-<img alt="method of calculation" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image5.png"/>
+<img alt="method of calculation display example" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image5.png"/>
 The `method` property is recursive, meaning that it is accumulated if your calculation is complicated. Initially, `method` is set to `auto`.
 
 ```typst
@@ -104,7 +104,7 @@ $
     &= #k.display 
 $
 ```
-<img alt="advanced methods" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image6.png"/>
+<img alt="advanced method usage demonstration" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image6.png"/>
 
 Sometimes, you may want to display your calculations with units omitted. The `quantity` function has a parameter `explicit` which is `true` by default. If this parameter is set to `false`, the unit of that quantity is ommitted for all of its calculation. 
 
@@ -161,7 +161,7 @@ If you want to manually set the formatting unit and numbers in the `quantity`, y
 #calculation.mul(R, T).display 
 // 5 figures, follows the T.
 ```
-<img alt="set-quantity" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image9.png"/>
+<img alt="set-quantity function can set the quantity's properties" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image9.png"/>
 
 Moreover, if you want to reset the `method` property of a quantity, you can use `set-quantity(q, method: auto)` as 
 
@@ -177,7 +177,7 @@ $ prod.method = prod.display $
 After reset:
 $ prod.method = prod.display $
 ```
-<img alt="reset method" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image10.png"/>
+<img alt="reset method by using set-quantity" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image10.png"/>
 
 ### Unit conversions 
 The `new-factor` function creates a new quantity that can be used as a conversion factor. This conversion factor have the following characteristics: 
@@ -204,7 +204,7 @@ $ v1.method = v1.display $
 Second conversion: 
 $ v2.method = v2.display $
 ```
-<img alt="new-factor" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image11.png"/>
+<img alt="new-factor declaration example" src="https://github.com/pacaunt/pariman/blob/e15dc70856d8cec53290177653a27aa77ab8b774/docs/image11.png"/>
 
 ### In-Text Quantity Declaration (The `qt` Module)
 This module provides a top-layer functions that makes declaration of the quantities can be done at the same time as showing the formatted quantities. Declaration can be done by `qt.new()` function, which receives the same argument set as the `quantity` constructor, but with an additional, positional argument: its key/name. This name is important because it will be used to retrieve the value declared for further calculations or updates. 
