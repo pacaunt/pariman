@@ -412,9 +412,17 @@
   /// Whether to show the unit when accessing the `method` property. This will effect only when setting BEFORE the calculation.
   /// -> bool
   explicit-method: true,
+  /// Error of the quantity. The significant value of the error is not tracked, and it can propagate through calculations.
+  /// -> float | int
   error:0,
-  source: none,
+  /// Ways to show how to calculate the error. This will be used during calculations. If this is a function, it accepts self quantity as one positional argument.
+  /// -> any
+  error-method: auto,
+  /// Ways to display the error quantity.
+  /// -> any 
+  error-display: auto, 
   is-exact: false,
+  source: none,
 ) = _make-quantity(
   value: raw-value,
   unit: args.pos(),

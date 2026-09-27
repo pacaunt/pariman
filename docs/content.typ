@@ -3,7 +3,7 @@
 = Installation
 Import the package by
 ```typst
-#import "@preview/pariman:0.2.2": *
+#import "@preview/pariman:0.2.3": *
 ```
 Or install the package locally by cloning this package into your local package location.
 
@@ -44,7 +44,7 @@ The displayed value: #s-pi.display \
 Significant figures: #s-pi.figures \
 Decimal places: #s-pi.places
 ```
-Note that the `quantity` function can accept only the value for the unitless quantoity.
+Note that the `quantity` function can accept only the value for the unitless quantity.
 
 == The `calculation` module
 The `calculation` module provides a framework for calculations involving units. Every function will modify the input `quantity`s into a new value with a new unit corresponding to the law of unit relationships.
@@ -109,6 +109,21 @@ Knudsen Diffusivity of nitrogen gas ($M_w = #M.display$) at $T = #T.display$ and
 
 $ D_k &= #D-K.method \ &= #D-K.display $
 ```
+
+== Error Propagation 
+Thanks to #link("https://github.com/Ants-Aare")[Ants-Aare], a contributor who implement this feature. Each quantity can have their own error, such as 
+```typ
+#let l1 = quantity("2.0", "m", error: "0.20")
+```
+The error can propagate through series of calculations, has their own `display`, `show`, and  `method` properties, just like another quantity. For example, 
+```example
+#let l1 = quantity("1.0", "m", error: 0.1)
+#let l2 = quantity("10.0", "m", error: 0.2)
+#let sum = calculation.add(l1, l2)
+$ #sum.method = #sum.display $
+$ "Error: " #sum.error-method = #sum.error-display $
+```
+Error calculation method display can be modified by changing the `error-method` argument in each calculation functions, similar to `method` of the quantities. 
 
 == `set-quantity` 
 If you want to manually set the formatting unit and numbers in the `quantity`, you can use the `set-quantity` function. 
@@ -201,6 +216,10 @@ Oh, too long,  \
 #qt.set-property("pi", display-figures: 4) 
 It is now only #qt.display("pi")
 ```
+
+
+
+
 = References 
 
 == The Constructors

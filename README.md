@@ -131,6 +131,22 @@ $ D_k &= #D-K.method \ &= #D-K.display $
 
 <img alt="hide unit in method" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image7.png"/>
 
+## Error Propagation 
+Thanks to [Ants-Aare]("https://github.com/Ants-Aare"), a contributor who implement this feature. Each quantity can have their own error, such as 
+```typst
+#let l1 = quantity("2.0", "m", error: "0.20")
+```
+The error can propagate through series of calculations, has their own `display`, `show`, and  `method` properties, just like another quantity. For example, 
+```typst
+#let l1 = quantity("1.0", "m", error: 0.1)
+#let l2 = quantity("10.0", "m", error: 0.2)
+#let sum = calculation.add(l1, l2)
+$ #sum.method = #sum.display $
+$ "Error: " #sum.error-method = #sum.error-display $
+```
+Error calculation method display can be modified by changing the `error-method` argument in each calculation functions, similar to `method` of the quantities. 
+<img alt="error calculation in quantities" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image8.png"/>
+
 ### `set-quantity` 
 If you want to manually set the formatting unit and numbers in the `quantity`, you can use the `set-quantity` function. 
 ```typst
@@ -145,7 +161,7 @@ If you want to manually set the formatting unit and numbers in the `quantity`, y
 #calculation.mul(R, T).display 
 // 5 figures, follows the T.
 ```
-<img alt="set-quantity" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image8.png"/>
+<img alt="set-quantity" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image9.png"/>
 
 Moreover, if you want to reset the `method` property of a quantity, you can use `set-quantity(q, method: auto)` as 
 
@@ -161,7 +177,7 @@ $ prod.method = prod.display $
 After reset:
 $ prod.method = prod.display $
 ```
-<img alt="reset method" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image9.png"/>
+<img alt="reset method" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image10.png"/>
 
 ### Unit conversions 
 The `new-factor` function creates a new quantity that can be used as a conversion factor. This conversion factor have the following characteristics: 
@@ -188,7 +204,7 @@ $ v1.method = v1.display $
 Second conversion: 
 $ v2.method = v2.display $
 ```
-<img alt="new-factor" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image10.png"/>
+<img alt="new-factor" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image11.png"/>
 
 ### In-Text Quantity Declaration (The `qt` Module)
 This module provides a top-layer functions that makes declaration of the quantities can be done at the same time as showing the formatted quantities. Declaration can be done by `qt.new()` function, which receives the same argument set as the `quantity` constructor, but with an additional, positional argument: its key/name. This name is important because it will be used to retrieve the value declared for further calculations or updates. 
@@ -199,7 +215,7 @@ A chemist added #qt.new("mA", "1.050", "g")
 of A into a beaker filled with 
 #qt.new("Vw", "100", "mL") of water. 
 ```
-<img alt="in-text declaration of quantities" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image11.png"/>
+<img alt="in-text declaration of quantities" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image12.png"/>
 
 Moreover, this `#qt.new` function also receives the following named options: 
 - `displayed` (bool, default: `true`) Whether to display the declared quantity immediately. 
@@ -216,7 +232,7 @@ I put a #qt.new("ms", "30.0", "g") of sugar into a #qt.new("V", "105", "mL") of 
 $ #qt.method("conc") = #qt.display("conc") $
 ```
 
-<img alt="qt.update function demonstration" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image12.png"/>
+<img alt="qt.update function demonstration" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image13.png"/>
 
 Note that `#qt.display(key)` and `#qt.method(key)` are used as  shortcut for accessing the `display` and `method` properties of the quantity identified by the name `key`.  For other properties, you can access by `#qt.get(key: name)` as the following. Highlight the `context`. 
 
@@ -224,7 +240,7 @@ Note that `#qt.display(key)` and `#qt.method(key)` are used as  shortcut for acc
 #context qt.get(key: "ms")
 ```
 
-<img alt="qt.get() to see the properties" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image13.png"/>
+<img alt="qt.get() to see the properties" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image14.png"/>
 
 Lastly, you can set the property like `set-quantity` function by using the analogous `#qt.set-property(key, ..properties)`, such as 
 
@@ -238,7 +254,7 @@ Oh, too long,  \
 It is now only #qt.display("pi")
 ```
 
-<img alt="set the quantity with qt.set-property" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image14.png"/>
+<img alt="set the quantity with qt.set-property" src="https://github.com/pacaunt/pariman/blob/eb55f7c3898f8fdce357b240f37371dda0aa3bbb/docs/image15.png"/>
 
 ## Available Calculation Methods 
 All functions in calculation module also accept the same format options in the `quantity` function for formatting the result quantity.

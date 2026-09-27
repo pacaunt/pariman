@@ -1,6 +1,6 @@
 [package]
 name = "pariman"
-version = "0.2.2"
+version = "0.2.3"
 entrypoint = "export.typ"
 authors = ["pacaunt <@pacaunt>"]
 license = "MIT"
